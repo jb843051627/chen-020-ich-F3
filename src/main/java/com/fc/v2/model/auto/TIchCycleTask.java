@@ -37,6 +37,21 @@ public class TIchCycleTask implements Serializable {
     @ApiModelProperty(value = "履约考核到期单")
     private String itemNo;
 
+    /** 事由 0履约催办 1年度考核 */
+    @TableField("biz_type")
+    @ApiModelProperty(value = "事由 0履约催办 1年度考核")
+    private Integer bizType;
+
+    /** 所拴名录项目代号或传承人代号 */
+    @TableField("target_code")
+    @ApiModelProperty(value = "所拴名录项目代号或传承人代号")
+    private String targetCode;
+
+    /** 联系人那一栏（手机） */
+    @TableField("contact")
+    @ApiModelProperty(value = "联系人那一栏（手机）")
+    private String contact;
+
     /** 该出手那一日的止点时刻 */
     @TableField("due_at")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
@@ -57,6 +72,17 @@ public class TIchCycleTask implements Serializable {
     @TableField("status")
     @ApiModelProperty(value = "条目情形 0候办 1已办妥 2催不动")
     private Integer status;
+
+    /** 办妥的那一刻（只随去向翻办妥一同落笔） */
+    @TableField("done_at")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @ApiModelProperty(value = "办妥的那一刻（只随去向翻办妥一同落笔）")
+    private Date doneAt;
+
+    /** 催不动卡在哪一处缘由 */
+    @TableField("fail_reason")
+    @ApiModelProperty(value = "催不动卡在哪一处缘由")
+    private String failReason;
 
     /** 删除标记 0正常 1删除 */
     @TableField("del_flag")
@@ -106,6 +132,30 @@ public class TIchCycleTask implements Serializable {
         this.itemNo = itemNo;
     }
 
+    public Integer getBizType() {
+        return bizType;
+    }
+
+    public void setBizType(Integer bizType) {
+        this.bizType = bizType;
+    }
+
+    public String getTargetCode() {
+        return targetCode;
+    }
+
+    public void setTargetCode(String targetCode) {
+        this.targetCode = targetCode;
+    }
+
+    public String getContact() {
+        return contact;
+    }
+
+    public void setContact(String contact) {
+        this.contact = contact;
+    }
+
     public Date getDueAt() {
         return dueAt;
     }
@@ -136,6 +186,22 @@ public class TIchCycleTask implements Serializable {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public Date getDoneAt() {
+        return doneAt;
+    }
+
+    public void setDoneAt(Date doneAt) {
+        this.doneAt = doneAt;
+    }
+
+    public String getFailReason() {
+        return failReason;
+    }
+
+    public void setFailReason(String failReason) {
+        this.failReason = failReason;
     }
 
     public Integer getDelFlag() {

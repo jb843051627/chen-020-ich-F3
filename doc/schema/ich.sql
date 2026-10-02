@@ -2,13 +2,21 @@
 -- 列名与基线实体契约（@TableName/@TableField）逐列对齐，改列必须同步实体。
 -- 库：chen_020
 
+-- 2026-10-02 起：t_ich_cycle_task 新增 biz_type/target_code/contact/done_at/fail_reason 五列；
+-- 办妥要留两个痕迹（去向翻办妥 + 办妥那一刻），催不动缘由顺着写进同一条；
+-- 两路送达与逾期撤回另立 t_ich_cycle_log 一笔一记录，撤回一笔盖不住 due_at 与 done_at 两处旧字。
 CREATE TABLE IF NOT EXISTS t_ich_cycle_task (
   id bigint NOT NULL COMMENT '主键',
   item_no varchar(64) DEFAULT NULL COMMENT '履约考核到期单',
+  biz_type int DEFAULT NULL COMMENT '事由 0履约催办 1年度考核',
+  target_code varchar(64) DEFAULT NULL COMMENT '所拴名录项目代号或传承人代号',
+  contact varchar(64) DEFAULT NULL COMMENT '联系人那一栏（手机）',
   due_at datetime DEFAULT NULL COMMENT '该出手那一日的止点时刻',
   amount decimal(12,2) DEFAULT NULL COMMENT '可提前几日开口',
   content varchar(255) DEFAULT NULL COMMENT '事由与所对名录项目或传承人记要',
   status int DEFAULT NULL COMMENT '条目情形 0候办 1已办妥 2催不动',
+  done_at datetime DEFAULT NULL COMMENT '办妥的那一刻（只随去向翻办妥一同落笔）',
+  fail_reason varchar(255) DEFAULT NULL COMMENT '催不动卡在哪一处缘由',
   del_flag int DEFAULT '0' COMMENT '删除标记 0正常 1删除',
   create_by varchar(64) DEFAULT NULL COMMENT '创建者',
   create_time datetime DEFAULT NULL COMMENT '创建时间',
@@ -17,6 +25,24 @@ CREATE TABLE IF NOT EXISTS t_ich_cycle_task (
   remark varchar(500) DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='履约考核到期单';
+
+-- 到期单办理留痕：两路送达各记各的（手机短信那一路不算替站内那一路交差），
+-- 逾期撤回另记一笔，事后查得到它的存在；旧轮痕迹一笔不抹。
+CREATE TABLE IF NOT EXISTS t_ich_cycle_log (
+  id bigint NOT NULL COMMENT '主键',
+  task_id bigint NOT NULL COMMENT '所属到期单 t_ich_cycle_task.id',
+  action varchar(16) DEFAULT NULL COMMENT '动作 SITE_MSG站内送达 SMS手机短信送达 WITHDRAW逾期撤回',
+  content varchar(255) DEFAULT NULL COMMENT '这一笔的记要',
+  action_time datetime DEFAULT NULL COMMENT '落笔时刻',
+  del_flag int DEFAULT '0' COMMENT '删除标记 0正常 1删除',
+  create_by varchar(64) DEFAULT NULL COMMENT '创建者',
+  create_time datetime DEFAULT NULL COMMENT '创建时间',
+  update_by varchar(64) DEFAULT NULL COMMENT '更新者',
+  update_time datetime DEFAULT NULL COMMENT '更新时间',
+  remark varchar(500) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (id),
+  KEY idx_cycle_log_task (task_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='履约考核到期单办理留痕';
 
 CREATE TABLE IF NOT EXISTS t_ich_grant_bill (
   id bigint NOT NULL COMMENT '主键',
